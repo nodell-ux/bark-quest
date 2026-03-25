@@ -39,9 +39,21 @@ function init() {
   initRenderer(canvas);
   initSprites();
   setupTouchControls();
+  // Handle both click (desktop) and touch (mobile)
   canvas.addEventListener('click', handleClick);
-  canvas.addEventListener('touchend', e => e.preventDefault());
+  canvas.addEventListener('touchstart', handleTouch, { passive: false });
   requestAnimationFrame(gameLoop);
+}
+
+function handleTouch(e) {
+  e.preventDefault(); // prevent double-fire and scroll
+  SFX.init();
+  const touch = e.touches[0];
+  if (!touch) return;
+  const rect = e.target.getBoundingClientRect();
+  const scaleX = GAME_WIDTH / rect.width;
+  const x = (touch.clientX - rect.left) * scaleX;
+  processMenuTap(x);
 }
 
 function handleClick(e) {
@@ -49,12 +61,15 @@ function handleClick(e) {
   const rect = e.target.getBoundingClientRect();
   const scaleX = GAME_WIDTH / rect.width;
   const x = (e.clientX - rect.left) * scaleX;
+  processMenuTap(x, e.detail === 2);
+}
 
+function processMenuTap(x, isDoubleClick = false) {
   if (state === STATE.TITLE) { state = STATE.SELECT; SFX.menuConfirm(); }
   else if (state === STATE.SELECT) {
     selectedChar = x < GAME_WIDTH / 2 ? 'sully' : 'june';
     SFX.menuSelect();
-    if (e.detail === 2 || window._lastTap === selectedChar) startGame();
+    if (isDoubleClick || window._lastTap === selectedChar) startGame();
     window._lastTap = selectedChar;
   }
   else if (state === STATE.LEVEL_INTRO) startLevel();
