@@ -39,38 +39,38 @@ function init() {
   initRenderer(canvas);
   initSprites();
   setupTouchControls();
-  // Handle both click (desktop) and touch (mobile)
-  canvas.addEventListener('click', handleClick);
-  canvas.addEventListener('touchstart', handleTouch, { passive: false });
+
+  // Use pointerdown - works on ALL devices (mouse, touch, pen)
+  canvas.addEventListener('pointerdown', handlePointer);
+  // Prevent context menu and text selection on long-press
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+  // Prevent scrolling when touching canvas
+  canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
   requestAnimationFrame(gameLoop);
 }
 
-function handleTouch(e) {
-  e.preventDefault(); // prevent double-fire and scroll
-  SFX.init();
-  const touch = e.touches[0];
-  if (!touch) return;
-  const rect = e.target.getBoundingClientRect();
-  const scaleX = GAME_WIDTH / rect.width;
-  const x = (touch.clientX - rect.left) * scaleX;
-  processMenuTap(x);
-}
-
-function handleClick(e) {
-  SFX.init();
+function handlePointer(e) {
+  e.preventDefault();
+  try { SFX.init(); } catch (_) {}
   const rect = e.target.getBoundingClientRect();
   const scaleX = GAME_WIDTH / rect.width;
   const x = (e.clientX - rect.left) * scaleX;
-  processMenuTap(x, e.detail === 2);
+  processMenuTap(x);
 }
 
-function processMenuTap(x, isDoubleClick = false) {
+function processMenuTap(x) {
   if (state === STATE.TITLE) { state = STATE.SELECT; SFX.menuConfirm(); }
   else if (state === STATE.SELECT) {
-    selectedChar = x < GAME_WIDTH / 2 ? 'sully' : 'june';
-    SFX.menuSelect();
-    if (isDoubleClick || window._lastTap === selectedChar) startGame();
-    window._lastTap = selectedChar;
+    const picked = x < GAME_WIDTH / 2 ? 'sully' : 'june';
+    if (picked === selectedChar && window._lastTap === picked) {
+      // Second tap on same character = confirm
+      startGame();
+    } else {
+      selectedChar = picked;
+      SFX.menuSelect();
+    }
+    window._lastTap = picked;
   }
   else if (state === STATE.LEVEL_INTRO) startLevel();
   else if (state === STATE.LEVEL_COMPLETE && levelCompleteTimer > 30) nextLevel();

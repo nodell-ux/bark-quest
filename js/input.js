@@ -17,14 +17,17 @@ export function setupTouchControls() {
   for (const [id, action] of Object.entries(map)) {
     const el = document.getElementById(id);
     if (!el) continue;
-    const press = e => { e.preventDefault(); touches[action] = true; };
-    const release = e => { e.preventDefault(); touches[action] = false; };
+    const press = e => { e.preventDefault(); e.stopPropagation(); touches[action] = true; };
+    const release = e => { e.preventDefault(); e.stopPropagation(); touches[action] = false; };
+    // Use pointer events (works on all devices) + touch fallbacks
+    el.addEventListener('pointerdown', press);
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+    el.addEventListener('pointerleave', release);
+    // Touch fallbacks for older browsers
     el.addEventListener('touchstart', press, { passive: false });
     el.addEventListener('touchend', release, { passive: false });
     el.addEventListener('touchcancel', release, { passive: false });
-    el.addEventListener('mousedown', press);
-    el.addEventListener('mouseup', release);
-    el.addEventListener('mouseleave', release);
   }
 }
 
