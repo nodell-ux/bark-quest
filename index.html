@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1A1A2E">
+  <title>Bark Quest: The Reckoning</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐕</text></svg>">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="touch-controls">
+      <div id="dpad">
+        <button id="btn-up" aria-label="Move Up">&#9650;</button>
+        <div id="dpad-mid">
+          <button id="btn-left" aria-label="Move Left">&#9664;</button>
+          <button id="btn-right" aria-label="Move Right">&#9654;</button>
+        </div>
+        <button id="btn-down" aria-label="Move Down">&#9660;</button>
+      </div>
+      <div id="action-buttons">
+        <button id="btn-bark" aria-label="Bark">BARK</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
